@@ -6,20 +6,21 @@ import (
 )
 
 const setSize = 100
-const targetNum = 10
-const numOfTest = 100000
+const targetNum = 30
+const numOfTest = 100000000
 
 func main() {
 	if targetNum > setSize {
 		fmt.Println("Invalid targetNum")
 		return
 	}
-	experiment(123133)
+	experiment(123369)
 }
 
 func experiment(seed int64) {
 	rand.Seed(seed)
 	naiveApproach()
+	prisonersApproach()
 }
 
 func naiveApproach() {
@@ -31,7 +32,19 @@ func naiveApproach() {
 		round := whenFinish(source, sequence)
 		totalNum += uint64(round)
 	}
-	expectedRound := totalNum / numOfTest
+	expectedRound := float64(totalNum) / numOfTest
+	fmt.Println("Expected Round num =", expectedRound)
+}
+
+func prisonersApproach() {
+	var totalNum uint64
+	totalNum = 0
+	for i := 0; i < numOfTest; i++ {
+		source := genRandomSet()
+		round := whenFinishPrisoner(source)
+		totalNum += uint64(round)
+	}
+	expectedRound := float64(totalNum) / numOfTest
 	fmt.Println("Expected Round num =", expectedRound)
 }
 
@@ -54,6 +67,17 @@ func whenFinish(source, sequence []uint32) int {
 		if source[target-1] == targetNum {
 			return i + 1
 		}
+	}
+	return setSize
+}
+
+func whenFinishPrisoner(source []uint32) int {
+	target := targetNum
+	for i := 0; i < setSize; i++ {
+		if source[target-1] == targetNum {
+			return i + 1
+		}
+		target = int(source[target-1])
 	}
 	return setSize
 }
